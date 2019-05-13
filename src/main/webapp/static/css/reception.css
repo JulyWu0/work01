@@ -1,0 +1,690 @@
+/* 滚动槽 */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F2F2F2;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: #c2c2c2;
+}
+
+.team {
+    line-height: 50px;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.btn-far {
+    margin: 20px 15px;
+}
+
+.larger-icon {
+    font-size: 20px;
+    margin-right: 5px;
+    padding: 3px;
+    border: 1px solid #1E9FFF;
+    border-radius: 6px;
+    color: #1E9FFF;
+}
+
+.larger-icon-refresh {
+    font-size: 15px;
+    /*margin-right: 5px;*/
+    /*border: 1px solid #E6E6E6;*/
+    border-radius: 6px;
+    margin-top: -38px;
+    /*padding: 5px 5px;*/
+    /*background-color: #01AAED;*/
+    cursor: pointer;
+}
+
+.larger-icon-enter {
+    font-size: 15px;
+    /*margin-right: 5px;*/
+    /*border: 1px solid #E6E6E6;*/
+    border-radius: 6px;
+    margin-top: -38px;
+    margin-right: 235px;
+    /*padding: 5px 5px;*/
+    /*background-color: #01AAED;*/
+    cursor: pointer;
+}
+
+.exam_item {
+    /*5个检查项目不显示滚动条*/
+    height: 220px;
+    /*overflow: auto;*/
+}
+
+.larger-checkbox {
+    height: 128px;
+    width: 147px;
+    padding-right: 20px;
+}
+
+.team-left {
+    margin-left: 0;
+}
+
+.small-item {
+    margin-bottom: 0px;
+}
+
+.icon-style-ok {
+    color: #09BB07;
+}
+
+.icon-style-no {
+    color: #ED7161;
+}
+
+.tipsWord {
+    color: #5FB878;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.team-name {
+    color: #1E9FFF;
+}
+
+.summary {
+    color: #88C057;
+    margin-left: 25px;
+}
+
+.summary-error {
+    color: #ED7161;
+    margin-left: 25px;
+}
+
+.error-msg {
+    color: #FF5722;
+}
+
+/*一个申请单*/
+.oneReq {
+    margin-top: 10px;
+    margin-left: 25px;
+    margin-right: 10px;
+    border: 1px solid #01AAED;
+    /*border-bottom-left-radius: 20px;*/
+    /*border-bottom-right-radius: 20px;*/
+    border-radius: 20px;
+    /*20190113:for reqdatetime*/
+    position: relative
+}
+
+.eitem-tips {
+    font-size: 12px;
+    background-color: #FFCC66;
+    border: 1px solid #FFCC66;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+
+.reqdatetime {
+    float: left;
+    position: absolute;
+    right: 40px;
+    top: -10px;
+    background-color: white;
+    padding: 0px 5px;
+}
+
+fieldset {
+    border-radius: 10px;
+}
+
+.none-display {
+    display: none;
+}
+
+.selectUnselectBtns {
+    position: absolute;
+    left: 0px;
+}
+
+.selectUnselectBtnsForBarcode {
+    margin-left: 28px;
+}
+
+.schedule-time {
+    display: inline-block;
+    width: auto;
+}
+
+.week {
+    margin-left: 20px;
+    color: #1E9FFF;
+}
+
+.reception-title {
+    box-shadow: 0 4px 8px 0 rgba(7, 17, 27, 0.1);
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    /*background-color: #01AAED;*/
+}
+
+.main {
+    margin-top: 10px;
+}
+
+body {
+    /*background-color: #FAF7EF;*/
+    /*you cannot choose any word*/
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /*20190124:页面禁用滚动条*/
+    /*overflow: hidden;*/
+}
+
+
+#cardNumInput {
+    background-color: #FAF7EF;
+    border-color: #1E9FFF;
+    border-radius: 6px;
+    /*width: 60%;*/
+}
+
+/*
+#changeHospEtype {
+    background-color: #FAF7EF;
+}
+
+.reqdatetime {
+    background-color: #FAF7EF;
+}
+
+#scheduleDateInput {
+    background-color: #FAF7EF;
+    border-color: #01AAED;
+}
+
+td {
+    background-color: #FAF7EF;
+}*/
+
+.layer-form-position {
+    margin-top: 10px;
+}
+
+.layer-form-position-center {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.shorter-input {
+    display: inline-block;
+    width: 35%;
+}
+
+/*加减号的概览信息*/
+.add-num-summary {
+    margin-left: 38px;
+    color: #09BB07;
+}
+
+.text-highlight {
+    color: #1E9FFF;
+}
+
+.pop-icon-success {
+    font-size: 20px;
+    margin-right: 5px;
+    padding: 5px;
+    border: 1px solid #09BB07;
+    background-color: #09BB07;
+    /*work with layui-circle class*/
+}
+
+.pop-icon-error {
+    font-size: 20px;
+    margin-right: 5px;
+    padding: 5px;
+    border: 1px solid #F76260;
+    background-color: #F76260;
+    /*work with layui-circle class*/
+}
+
+.pop-icon-tips {
+    font-size: 25px;
+    margin-right: 5px;
+    /*padding: 5px;*/
+    /*border: 1px solid #F4BD00;*/
+    background-color: #F4BD00;
+    /*work with layui-circle class*/
+}
+
+.closer-title {
+    margin: 10px 0 10px;
+}
+
+.large-font {
+    font-size: large;
+    color: #1E9FFF;
+}
+
+.disabled-team {
+    /*background-color: #f76260;*/
+    background-color: #ED7161;
+}
+
+.clear-both {
+    clear: both;
+}
+
+.team-color-tips {
+    padding: 9px 5px;
+    margin-bottom: 10px;
+}
+
+.operate-area {
+    float: left;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    margin-top: 24px;
+}
+
+.inline-block-display {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.considerations-text {
+    font-size: 14px;
+    /*border*/
+    margin-top: 10px;
+    margin-left: 15px;
+    margin-right: 20px;
+    border: 1px solid #01AAED;
+    border-radius: 20px;
+    height: 200px;
+}
+
+.edit-considerations-btn {
+    float: right;
+    margin-right: 30px;
+    margin-top: -30px;
+}
+
+.my-icon-tips {
+    background-color: #F4BD00;
+}
+
+.eitem-tips-fieldset {
+    position: relative;
+}
+
+#patInfoSummary {
+    position: absolute;
+    font-size: 14px;
+    float: left;
+    left: 226px;
+    top: 4px;
+    background-color: white;
+    padding: 0px 5px;
+}
+
+#regAbleEitemSummary {
+    position: absolute;
+    font-size: 14px;
+    float: left;
+    left: 500px;
+    top: 4px;
+    background-color: white;
+    padding: 0px 5px;
+}
+
+#checkedEitemSummary {
+    position: absolute;
+    font-size: 14px;
+    float: left;
+    left: 847px;
+    top: 4px;
+    background-color: white;
+    padding: 0px 5px;
+}
+
+#preReceptionSummary_date {
+    padding: 9px 15px;
+    margin-left: -30px;
+    padding-right: 10px;
+}
+
+#preReceptionSummary_team {
+    padding: 11px 0px;
+    margin-left: -0px;
+}
+
+#scheduleName {
+    margin-left: 0px;
+    min-height: 0px;
+}
+
+.schedule-date-laydate {
+    margin-top: 5px;
+    padding-left: 5px;
+}
+
+.reg-tips-column {
+    margin-bottom: -15px;
+}
+
+.exam-item-stock-height {
+    height: 215px;
+    overflow: auto;
+}
+
+#team_area .layui-form-checkbox span {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+
+#team_area .layui-form-checkbox i {
+    right: -30px;
+    height: 126px;
+    border: 0px;
+}
+
+#team_area .team-span-label {
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+}
+
+#team_area .team-span-content {
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+}
+
+#team_area .team-span-content-left {
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+}
+
+.operate-area .btn-far button {
+    width: 138px;
+    text-align: left;
+}
+
+.layui-form-radio > i:hover, .layui-form-radioed > i {
+    color: #88C057;
+}
+
+.modify-reg-mode-tag {
+    background-color: #323639;
+    color: #DADCE0;
+    border: 1px solid #DADCE0;
+    border-radius: 6px;
+}
+
+#modifyRegModeTag {
+    position: absolute;
+    float: left;
+    left: 960px;
+    top: 0px;
+}
+
+
+.modify-reg-mode {
+    background-color: #323639;
+}
+
+.modify-reg-mode #examItemContent .layui-form-checkbox span {
+    color: #DADCE0;
+}
+
+.tips-in-modify-reg-mode {
+    color: #DADCE0;
+    margin-left: 62px;
+}
+
+.lefter-label {
+    padding-left: 0px;
+    padding-right: 10px;
+    width: auto;
+}
+
+
+/*更大的号池详情选择框------开始*/
+#specifyNumForm .layui-form-checkbox .layui-icon {
+    width: 35px;
+    height: 35px;
+}
+
+#specifyNumForm .layui-form-item .layui-form-checkbox[lay-skin=primary] {
+    margin-top: 25px;
+}
+
+#specifyNumForm .layui-form-checkbox[lay-skin=primary] {
+    margin-right: 15px;
+}
+
+#specifyNumForm .layui-input-block {
+    margin-left: 200px;
+    text-align: left;
+}
+
+#specifyNumForm .layui-form-checkbox[lay-skin=primary] i {
+    line-height: 35px;
+    font-size: 20px;
+}
+
+/*更大的号池详情选择框------结束*/
+
+/*号池详情--更大的号池详情选择框------开始*/
+#show_num_pool_detail_form_2 .layui-form-checkbox .layui-icon {
+    width: 35px;
+    height: 35px;
+}
+
+#show_num_pool_detail_form_2 .layui-form-item .layui-form-checkbox[lay-skin=primary] {
+    margin-top: 25px;
+}
+
+#show_num_pool_detail_form_2 .layui-form-checkbox[lay-skin=primary] {
+    margin-right: 15px;
+}
+
+#show_num_pool_detail_form_2 .layui-input-block {
+    margin-left: 200px;
+    text-align: left;
+}
+
+#show_num_pool_detail_form_2 .layui-form-checkbox[lay-skin=primary] i {
+    line-height: 35px;
+    font-size: 20px;
+}
+
+/*号池详情更大的号池详情选择框------结束*/
+
+
+.pop-form {
+    margin-top: 10px;
+}
+
+.pop-input {
+    width: 95%;
+    border-radius: 6px;
+}
+
+.little-tips {
+    background-color: red;
+    border-radius: 6px;
+}
+
+#print_barcode_form .layui-form-checkbox {
+    margin-top: 10px;
+}
+
+#giveup_num_form .layui-form-checkbox {
+    margin-top: 10px;
+}
+
+#team_area .layui-tab {
+    margin: 0px;
+}
+
+#signinResultSummary .layui-icon {
+    margin-left: 110px;
+}
+
+#signinResultSummary .layui-icon:first-of-type {
+    margin-left: 0px;
+}
+
+.fieldset-sm {
+    width: 83.2%
+}
+
+.watermark {
+    color: #d2d2d2;
+}
+
+.num-pool-summary {
+    text-align: center;
+}
+
+.not-paid {
+    border: 1px solid #F76260;
+    background-color: #F76260;
+    border-radius: 6px;
+}
+
+.icon-close-not-paid {
+    padding: 0;
+    font-size: 14px;
+}
+
+#setRegTypeReqinfoForm .layui-form-checkbox {
+    margin-top: 10px;
+}
+
+.set-reg-type-radio {
+    margin-left: 30px;
+    color: #88C057;
+}
+
+.set-reg-type-radio .layui-form-radio {
+    margin-top: 0;
+}
+
+.reg-type-emergency {
+    background-color: red;
+    border-radius: 6px;
+    padding: 0 5px;
+    color: black;
+    margin-right: 20px;
+}
+
+.no-signinable-summary {
+    line-height: 40px;
+}
+
+#signin_form .layui-input-block {
+    margin-left: 20px;
+}
+
+#print_barcode_form .layui-input-block {
+    margin-left: 20px;
+}
+
+#giveup_num_form .layui-input-block {
+    margin-left: 20px;
+}
+
+.changelog-content {
+    margin-left: 50px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+#scheduleNameForNumPoolDetail {
+    width: auto;
+}
+
+#show_num_pool_detail_form_2 {
+    margin-top: 10px;
+}
+
+.team-is-off {
+    margin-top: 50px;
+    margin-left: -10px;
+}
+
+.teamoutline-div {
+    font-size: 14px;
+    text-align: left;
+    background-color: rgb(136, 192, 87);
+    border-radius: 10px;
+    margin: 10px 20px;
+    padding: 5px 5px;
+}
+
+.teamisoff {
+    background-color: rgb(237, 113, 97);
+    font-size: 18px;
+}
+
+.team-name-div {
+    height: 100%;
+    float: left;
+    font-size: 20px;
+    margin: 23px 5px;
+    width: 30%;
+    text-align: center;
+}
+
+.team-outline-div {
+    height: 100%;
+    float: left;
+    font-size: 18px;
+    width: 60%;
+}
+
+.my-div-disabled {
+    cursor: not-allowed!important;
+}
+
+.my-div-enabled {
+    cursor: pointer;
+}
+
+.font-size-18 {
+    font-size: 18px;
+}
+
+.static-width-span {
+    width: 60%;
+    display: inline-block;/*很有用的属性，只有这样，span的width属性才会生效*/
+}

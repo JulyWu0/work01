@@ -1,0 +1,22 @@
+{
+	"etypelist": [{
+		"etypecode": "US",
+		"etypedesc": "超声检查"
+	}, {
+		"etypecode": "CS",
+		"etypedesc": "心脏超声"
+	}],
+	"hosplist": [{
+		"hosphiscode": "1",
+		"hospid": "H0001",
+		"hospname": "本部"
+	}, {
+		"hosphiscode": "2",
+		"hospid": "H0002",
+		"hospname": "草堂院区"
+	}, {
+		"hosphiscode": "3",
+		"hospid": "H0003",
+		"hospname": "城东院区"
+	}]
+}

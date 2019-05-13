@@ -1,0 +1,16 @@
+{
+  "npdate": "2019-02-19",
+  "npguid": "c4176d92-33eb-11e9-b1ae-000c29144c24",
+  "numcount": 1,
+  "numend": 14,
+  "numsignin": 1,
+  "numstart": 14,
+  "returncode": 0,
+  "returnmsg": "成功",
+  "schebegintime": 800,
+  "scheendtime": 1200,
+  "scheguid": "4ae7f03e-50bf-4a2f-a883-cba48444f8ff",
+  "schename": "上午",
+  "teamguid": "105e1ec8-8fac-4847-bd41-15faba891d39",
+  "teamname": "一诊室"
+}

@@ -1,0 +1,657 @@
+1.我需要有一个后台吗？会提供查询所有诊室、时段之类的api吗？
+
+2.由于时段和诊室是根据项目来确定的，那么一开始就将时段和项目全部设为disable，根据项目查询的返回结果再启用能够被选择的
+
+3.被选中的检查项目的脚标的存储方案：
+    初始化一个二维数组，长度为申请单数量。
+    外层数组的脚标为申请单reqlist的脚标，内层数组的脚标为检查项目eitemlist的脚标。
+    （reqinfo会在每次查询之后赋给“类变量”）
+
+4.申请单查询返回的每条单子信息跟查询可预约诊室及时段的参数相比：
+    查询参数多了两个参数："hospid": "H0280009",以及"schedate": 1546222643
+
+5.js操作json注意引用传递的问题(深拷贝)
+
+
+
+6.20190111：前台手工预约没这个接口了。
+查询能否预约的返回信息是以诊室为单位的，诊室下面才是时段，而不是诊室、时段分开。
+    (返回的诊室的sche数组为空则代表不能预约)
+  但是其实病人更关心的是时段，而不是诊室，哪个诊室对于病人来说一样的。
+    可以这样处理：成功返回可预约信息之后，放开时段和诊室，诊室节点增加一个属性 data-teamSchedule ，值为时段的id(可能多个，空格隔开)，当选择时段的时候，
+                  根据这个属性来决定哪些诊室放开，哪些关闭。
+
+7.由于多个院区、多个检查类型使用的是同一套后台，所以需要本地存储常量(院区、检查类型等。)
+    使用 localStorage 来存储。
+    *******
+     * 将院区、检查类型存储在localStorage
+     * hospid:H0001
+     * hospname:本部
+     *
+     * etypecode:FB
+     * etypedesc:超声检查
+
+    *******
+
+
+8.返回的字典数据的排序服务端能够控制？
+    数组中对象的顺序，后端是能够控制的，而且一般来说都是控制了的。
+
+9.注意layui的表单的lay-filter要搭配class="layui-from"才行。
+
+10.以变量形式存储检查项目字典(主要是查询检查项目所占的号数),改造字典表形式，方便通过guid查询项目信息。
+    原始：
+    [{
+    		"eitemguid": "EF329A19-38EF-4118-AAFC-D15D81F2C761",
+    		"eitemname": "心脏常规1",
+    		"eitemnumcount": 2,
+    		"eitemorder": 0
+    	},
+    	{
+    		"eitemguid": "CCF62A7F-9F6C-4601-8BAD-4A312D56FF11",
+    		"eitemname": "右颈总动脉",
+    		"eitemnumcount": 1,
+    		"eitemorder": 1
+    	},
+    	{
+    		"eitemguid": "16F7C7A8-1AF8-4E11-B34F-93FBC31EF9E4",
+    		"eitemname": "双侧椎动脉",
+    		"eitemnumcount": 3,
+    		"eitemorder": 2
+    	},
+    	{
+    		"eitemguid": "CC74A149-6230-4142-9DC0-A80C03D868C5",
+    		"eitemname": "肝、胆、胰、脾",
+    		"eitemnumcount": 1,
+    		"eitemorder": 3
+    	}
+    ]
+    改造：
+{
+	"EF329A19-38EF-4118-AAFC-D15D81F2C761": {
+		"eitemguid": "EF329A19-38EF-4118-AAFC-D15D81F2C761",
+		"eitemname": "心脏常规1",
+		"eitemnumcount": 2,
+		"eitemorder": 0
+	},
+	"CCF62A7F-9F6C-4601-8BAD-4A312D56FF11": {
+		"eitemguid": "CCF62A7F-9F6C-4601-8BAD-4A312D56FF11",
+		"eitemname": "右颈总动脉",
+		"eitemnumcount": 1,
+		"eitemorder": 1
+	},
+	"16F7C7A8-1AF8-4E11-B34F-93FBC31EF9E4": {
+		"eitemguid": "16F7C7A8-1AF8-4E11-B34F-93FBC31EF9E4",
+		"eitemname": "双侧椎动脉",
+		"eitemnumcount": 3,
+		"eitemorder": 2
+	},
+	"CC74A149-6230-4142-9DC0-A80C03D868C5": {
+		"eitemguid": "CC74A149-6230-4142-9DC0-A80C03D868C5",
+		"eitemname": "肝、胆、胰、脾",
+		"eitemnumcount": 1,
+		"eitemorder": 3
+	}
+}
+
+11.TODO 特殊项目
+    程序暂未考虑，或者前台预约人员自己注意。
+
+12.一个申请单的多个项目是否可以分开预约？
+    可以分开预约。
+
+13.打印pdf目前没办法自动关闭页面
+
+14.由于锁号的接口入参需要携带申请单号，所以，如果一个就诊卡有多个申请单，那么只能一个单子一个单子地预约。一次预约操作不能跨两个单子。
+
+15.小票的重新再次打印
+    已经解决。根据卡号查询申请单，然后打印。
+
+16.根据 reqinfo 返回信息判断项目是否已经被预约：
+    返回的reqlist节点中的json对象如果有 reginfo 这个节点，则证明已经被预约，这个节点中就有预约信息。
+
+17.reqinfo中，hiscode 和 hissubcode 共同标识在his系统是否是一个申请单，一个申请单归在一起，跟其他申请单区别开，并显示开单时间。最好再按照开单时间降序排列。
+    为了对申请单进行分组，在申请单div的id命名上规则为：hiscode-hissubcode
+
+18.申请单排序
+    在后端完成。
+
+19.锁号占号的入参相对于返回的申请单信息：
+    增加了reginfo节点，其内容为预约的 日期、时段、诊室
+
+20.为什么打印小票有确认界面？
+    因为还可能是打印报告，打印机都不一样，所以需要确认选择。
+    chrome跳过打印确认界面：TODO 怎么设置。
+
+21.用js代码调起超过一个新窗口，需要chrome设置始终允许新窗口！
+    在第一次进入系统的时候就会要求设置。
+
+22.给清空输入框的按钮做个快捷键：F2
+
+23. 20190114 修改意见：
+    1.刷卡输入框回车启动查询申请单信息，刷卡器填入数据的时候末尾会自带一个回车
+    2.前台选择院区和检查类型，那么申请单查询就只显示出当前检查类型的项目（或者，将其他检查类型的项目也显示出来，但是不能选，给出提示；已预约的给出预约详情提示，方便前台选择合适的时间）
+    3.检查项目选择增加一个全选、取消全选按钮，如果只有一个项目，那么直接选中
+    4.TODO 暂时没搞定 。预约日期分为年、月、日三个区域，因为因为年、月变化不多，最好能选择、能输入。选择之后，显示星期几
+    5.补打条码的逻辑实现
+
+
+24.reqinfo中已经预约的单子会有reginfo这个节点，这个节点中有个 npstatus ，表示检查预约的状态：
+    dict_eitemstatus={
+        'N':{'order':1,'desc':'已排号'},
+        'Q':{'order':2,'desc':'已签到'},
+        'E':{'order':3,'desc':'检查开始'},
+        'F':{'order':4,'desc':'检查结束'},
+        'V':{'order':5,'desc':'审核完毕'},
+        'R':{'order':6,'desc':'报告已出'}
+    }
+
+25.将检查类型编码也全局存储，改变结构。
+
+26.补打条码的逻辑：
+    主界面刷卡，点击 打条码 ，获取卡号，再次查询reqinfo接口(结果存储到全局变量)，结果中查询筛选(有reginfo节点、而且检查类型属于当前前台的检查类型)，弹出可打印的申请单，勾选然后打印。
+    之所以再次查询，是因为比如：预约之后打印小票出错，然后点击打小票，如果从全局变量中获取，则不能得到此次预约的项目的reginfo。
+
+27.TODO pdf打印还要斟酌。
+
+28.TODO 打报告是批量打印，还是刷卡查询打印？
+    批量打印可能让小hao做
+
+
+29.加号的接口还在写。 TODO 可能还有取消预约的功能？
+
+30.什么时候置空reqinfo？
+    在准备进行赋值之前。
+
+    F2就不要调用initdata()了。
+
+
+31.加号操作的预分析
+         * 预分析：加号肯定是给某个诊室的 某个日期的某个时段加号，所以要先把诊室的概览显示出来
+         * 如果也用打条码那种弹出层的话，日期控件需要初始化、时段需要初始化、诊室需要初始化、诊室的剩余号还需要初始化，那就太多了。。
+         * 可以使用主页面的日期、时段、诊室的数据来进行加号，之所以打条码没有使用主界面的数据，是因为主界面检查项目的数据已经承载了很多功能，再加打条码的话会显得逻辑混乱
+         * 由于诊室可能不能选中，而日期和时段一定可以选中，那么弹出层里面就回显选中的日期和时段，然后让选择诊室，并提示如果想要切换日期或者时段，请回到主界面切换。
+         * 在页面初始化访问dicdata的时候将诊室名称和编码保存成全局变量，方便加号弹出层初始化诊室的下拉选择框。
+
+32. 20190117修改建议：
+    1.标题：超声预约系统
+    2.上面给出提示：如果页面异常，请刷新，给个按钮或者f5
+    3.刷卡 字体加大，输入框边线、底色突出一点
+    4.检查项目显示区域拉大，尽量不显示滚动条
+    5.日期选择控件固定，不使用弹出，下方整体布局变一下，星期几就不显示了，因为控件上有
+    6.诊室的选择块颜色区分:红色-不可选、黄色-可选、绿色-选中
+    7.三块区域对齐，几个按钮要不就贴着上面两块区域，然后整体跟下面对齐，注意自适应
+
+    提示信息加图标颜色、区分成功失败
+    成功的icon提示：<i class="layui-icon layui-icon-ok pop-icon-success layui-circle"></i>
+    失败的icon提示：<i class="layui-icon layui-icon-close pop-icon-error layui-circle"></i>
+    提示的icon提示：<i class="layui-icon layui-icon-tips pop-icon-tips layui-circle"></i>
+
+33.20190118：不要等到第一次预约打印才允许弹窗，那么第一次的预约打印就会弹不出来，直接第一次进入设置到院区的时候就弹窗。
+
+34. 20190118修改建议
+    1.日期只能选择当天及之后的
+    2.切换日期、时段的时候给出提示，即使这个时候没有选择诊室
+
+
+35. 20190118 flask框架下Ajax请求的参数data好像要转换成json格式字符串才可以。JSON.stringify(jsonObj)
+    需要在原先惯用的与Java后端配合的Ajax请求的格式的基础上添加；
+    contentType: 'application/json; charset=UTF-8',//设置头格式
+    data: JSON.stringify(data),//将json对象转换成字符串
+
+
+36. 20190122修改建议
+    1.院区检查类型设置之后不允许随便修改（手动删除localStorage中的hospid之后刷新页面重新设置）
+
+    步骤:
+        xp：F12-Resources-Local Storage-hospid右键delete
+        win7：F12-Application-Local Storage-选中hospid点上面的叉
+
+
+
+    2.预约按钮设置一个快捷键 F7
+    3.心超和腹超的注意事项是不一样的，所以要能够编辑
+    4.检查项目已经完成的就不显示了，不是本检查类型的项目默认就折叠
+    5.目前打印报告做不了，一是批量打印不适合，二是指定不了打印机。
+    6.弹出窗放在中间
+
+    注意事项能够编辑的实现：
+        页面显示默认，并写进localStorage，可以编辑，但是要注意必须手动输入换行符。
+
+
+37.如果网络慢，要注意防止多次点击按钮，请求多次。
+    点击之后禁用按钮，如果需要，操作完成之后，恢复按钮。
+    结果：似乎并没有立即执行置为disabled的代码，因为还是可以点击。
+
+
+38.放弃预约的功能：
+    整体的逻辑和补打小票差不多，也是针对状态为 N或Q的单子。
+
+39.20190123由于检查项目个数非常多，可以达到1000多，那么在页面缓存就会有压力，所以不缓存检查项目，不判断检查项目所占个数。
+
+40.TODO 锁号操作的一些user参数怎么定？
+
+41.20190124修改建议
+    整体的建议是不要出现整体的滚动条。
+    1.已选择：1个检查项目。往上移动，移到区域标题的后边，加个括号（总计10个检查项目未预约，已选择2个检查项目）
+    2.检查项目： 这几个字就不要了，注意事项： 这几个字就不要了
+    3.检查项目、注意事项这片区域小一点，可以整个区域与注意事项等高，检查项目区域如果不够，出现滚动条，滚动条加一个颜色
+    4.预约日期： 不要了，原预约时段：改成 预约：2019-01-30 后面就是选择时段的单选框，几个色块提示往上移，诊室块加大，日期选择控件和右边对齐
+    5.强制刷新系统 跟院区那些放到一排
+    6.按钮操作区域跟左边内容区域边线靠齐
+
+42.统一整体页面配色逻辑：
+    不可选择：红色 #ED7161
+    可以选择：黄色 #FFCC66
+    已经选择：绿色 #88C057
+
+43.20190128修改建议
+    0.取消占号 修改为 取消预约
+    1.右边操作按钮区域按照f1到f12的顺序上下排列
+    2.查询出申请单之后，显示一下，总共几个单子，每个单子的框框加个序号/水印序号
+    补打小票加一个所有全选。
+    3.做一个改号出来。可以按快捷键f8，那么检查项目反转，已预约的可以点击，然后选择日期、时段、诊室进行修改约号
+    逻辑：由于取消预约只能一个单子一个单子(是我们这边分的单子)地来，那么修改预约也是一个单子一个单子地来。所以修改预约时的检查项目的展示应该按照取消预约的来展示，而不是查询申请单常规预约时候的按检查项目来。
+    点击修改预约--查询reqinfo接口，按照取消预约的项目结构排列--!!界面要明确表示处于修改预约模式--选择已经预约的本检查类型项目--选择日期、时段--点击预约，此时js先取消预约，再执行预约。（如果取消预约失败给出提示；如果取消预约成功之后执行预约失败要给出提示）
+
+
+    4.上面大标题以下面信息展示选择区域为基准进行居中，强制刷新系统和院区检查类型显示和下方右边操作按钮区域对齐。
+
+20190129：原打印小票内容备份
+//***********************信息准备完毕，打印************************
+                                    //清空原有打印区域内容
+                                    $("#printAreaFatherDiv").html('');
+                                    //生成html代码
+                                    var printAreaHtmlContent = '' +
+                                        '    <div>' +
+                                        '        <div style="text-align: center;font-size:medium">' + localStorage.getItem(param.barcode_title_key) + '</div>' +
+                                        '        <div style="width: 95%;">' +
+                                        '            <div  style="display:block;clear: both;">' +
+                                        '                <div style="display: none" id="barcode_qrcode">' +
+                                        '                    ' +
+                                        '                </div>' +
+                                        '                <div style="width: 25%;float: left;">' +
+                                        '                    <img id="barcode_qrcode_img"/>' +
+                                        '                </div>' +
+                                        '                <div style="float: left;font-size: xx-small">' +
+                                        '                    <span> * * 基本信息 * * </span>' +
+                                        '                    <br/>' +
+                                        '                    <span>姓名：' + patname + '</span>' +
+                                        '                    <br/>' +
+                                        '                    <span>性别：' + patsex + '</span>' +
+                                        '                </div>' +
+                                        '            </div>' +
+                                        '            <div style="display:block;clear: both;font-size: 9px">' +
+                                        '                <div>' +
+                                        '                    <span> * *  * * 预约信息 * * * * </span>' +
+                                        '                    <br/>' +
+                                        '                    <span>检查项目：' + eitemStr + '</span>' +
+                                        '                    <br/>' +
+                                        '                    <span>检查日期：' + npdate + '</span>' +
+                                        '                    <br/>' +
+                                        '                    <span>已预约：' + regedDesc + '</span>';
+                                    if (returnReginfo.signin === true) {
+                                        printAreaHtmlContent += '                    <br/>' +
+                                            '                    <span>当前队列等待人数：' + waitfornumcount + ' 人</span>';
+                                    }
+                                    printAreaHtmlContent += '                    <br/>' +
+                                        '                    <span>打印时间：' + printdatetime + '</span>' +
+                                        '                    <br/>' +
+                                        '                    <span>注意事项：</span>' +
+                                        localStorage.getItem(param.considerations_key) +
+                                        '                </div>' +
+                                        '            </div>' +
+                                        '        </div>' +
+                                        '    </div>';
+                                    //将内容设置到相应区域
+                                    $("#printAreaFatherDiv").html(printAreaHtmlContent);
+                                    //生成条码到 printArea
+                                    $('#barcode_qrcode').qrcode({
+                                        width: 70,
+                                        height: 70,
+                                        text: npguid
+                                    });
+                                    //将canvas转为图片，否则打印空白
+                                    var canvas = $("#barcode_qrcode canvas")[0];
+                                    var qrcodeImg = canvas.toDataURL("image/png");
+                                    $("#barcode_qrcode_img").prop('src', qrcodeImg);
+                                    //调用打印api
+                                    var printHtmlContent = $("#printAreaFatherDiv").html();
+
+                                    printWebpage(printHtmlContent);
+                                    //20190123:打印后通知服务端打印了小票
+                                    notifyServerBarcodePrinted(npguid);
+                                    //打印条码成功的提示信息
+                                    layer.msg('<i class="layui-icon layui-icon-ok pop-icon-success layui-circle"></i>打印条码成功！');
+
+
+20190213:
+    新增一个预约指定号的功能，添加一个按钮，用来执行精确选号的预约操作。
+    点击按钮之后，弹出所选日期、时段、诊室的号池情况，区别开已预约，未预约，可以选择号。
+    选择号码之后，执行精确预约。--相比普通预约，reginfo加一个numstart节点
+    需要提供一个 由日期、时段、诊室 ID查询号池详情的接口。
+
+    #获取诊室排队信息
+    /ris/regm/teaminfo
+
+    入参
+    {
+    teamguid=
+    schedate=
+    scheguid=
+    hospid=
+    examtype=
+    }
+
+    返回结果
+    {
+        'teamguid':'834945389-rewt9546=4350359-43525-rfer-34',
+        'teamname':'一诊室',
+        'teamorder':1,
+        'teamhiscode':'hiscode',
+        'teamisoff':False,--注意先判断是否关闭了
+        'teampresetnum':50,--总号数。数据与配置的，不包括加减号的数目，也就是说实际上当前号数应该是 总号数+加减号数
+        'teamreservednum':10,--预留号数。从1开始，可以选择，但是要注意与普通号区分开
+        'teamusednum':22,
+        'teamwaitnum':5
+        'teamincdecnum':0--加减号数，减号就是负数
+        'teamremainnum':0--剩余号。貌似目前没有去计算
+        'teamusednumlist':[号信息节点]
+    }
+
+    号信息节点格式如下
+    {
+    	'numstart'=--起始。包含
+        'numend'=--截止。包含
+        'numcount'=--计数。数目
+        'numsourcetype'=--来自，移动端、自助机、前台。暂时不用
+        'numtype'=--号的类型，普通、预留、vip。暂时不用
+    }
+
+20190219：
+    添加签到接口。暂定使用小票签到
+
+
+20190221 精准预约、精准修改还是有问题的
+    问题出在同时选择两个申请单的时候，锁号参数的reqlist数组有两个，这两个精准预约需要分别指定numstart，目前的逻辑是两个都指定为了同一个，所以第二个
+    预约的单子会预约不起，因为号已经被占了。
+    解决这个bug，需要精准预约的时候，如果有多个单子，那么需要一个一个约，下一个指定的numstart需要在上一个预约成功返回之后获取numend，并加1作为numstart。
+    解决：想的是第一个单子精准预约之后，通过返回的reginfo中的数据来继续约下一个。但是这种实现起来难度有点大，暂时限制精准预约精准修改只能选择一个申请单的项目。
+
+
+20190221 诊室加号 确实加上了 但是用不了
+20190221 项目名称如果有空格，显示会有问题 ,解决：原先title='+eitemname+'，改成title="'+eitemname+'"
+20190221 先预约了一个，再精准预约，会将之前预约的也返回，打小票两个
+    但是之前预约的有个特点就是eiteamlist数组为空，根据这个特点可以排除之前预约的。
+20190221 显示的号是签到号还是预约号
+        二楼显示签到号，四楼显示预约号。
+20190222 通过申请单返回的 pattypecode 写门诊住院、regtypecode 写普通急诊(每个单子都写)
+
+20190225：
+    心超需要显示每个诊室可约的项目，暂时使用笨办法，直接写死设置。
+
+20190225:
+    住院的修改预约，锁号返回的是重复计费错误，从而不会自动打小票。
+
+20190302：
+    二楼所有的号码提示改为签到号，不显示预约号
+
+20190302：
+    1、 （二楼）一次预约一张小票。
+    2、 （二楼、四楼）签到保留目前扫小票上的二维码签到(正则判断输入类型GUID)，新增输入卡号的签到，查询申请单，筛选可签到的检查项，列出来，勾选然后循环签到。
+
+1、（二楼）签到打小票？要做吗
+
+20190305:
+    1.精准预约号池添加号码水印显示
+    2.单独添加一个查看号池功能。
+        单独添加查看号池功能，只能类似加减号那个页面，日期和时段不再进行初始化，这两个在首页选好，弹出层只选诊室。（因为日期和时段在首页任何时候都能选，诊室不一定能选，所以弹出层选择诊室）
+
+20190308：
+    为了使同一个病人不因为有单子没有缴费而进不了系统，reqinfo接口的返回结果reqlist下的每个申请单根节点添加了一个节点 paid: true 用以指示是否缴费了。
+    针对门诊的判断，住院这个节点默认为 true 。
+
+20190314:
+    二楼二维码只打印一个npguid。任意一个。
+    签到的时候如果扫npguid二维码，则访问另一个接口进行查询申请信息然后签到。(四楼老师习惯扫条码签到，那么还是区分一下二楼四楼)
+
+
+    20190314:将检查设置为急诊
+        1.接口地址？
+        2.可以再设置为普通检查吗？（应该可以，因为直接修改的数据库）
+        3.思考一下如何交互
+/ris/regm/setregtype
+
+{
+	"hiscode":"hiscode",
+	"hissubcode":"hissubcode",
+	"isemergent":"1",//设置为急诊 1 = 急诊，0 = 平诊
+	"examtype":"US",
+	"hospid":"H0001"
+}
+
+    解决：
+        1.可以设置 预约类型 的单子应该是 本检查类型的已预约、未预约的单子都可以
+        2.设置 预约类型 的基本单位应该是一个his申请单。
+        3.弹出层展示内容就和查询申请单之后差不多，不过不显示其他检查类型的
+
+20190319：
+    修改显示四楼的诊室排列。
+
+20190325
+    四楼添加中午和晚上 推荐就诊时间
+    中午 11:30 - 13:30
+    else if (schename === '中午') {
+                        recommendTimeForCS = '11:30 - 13:30';
+                    }
+    晚上 17:00 - 19:00
+    else if (schename === '晚上') {
+                        recommendTimeForCS = '17:00 - 19:00';
+                    }
+
+20190401：
+    1.不显示其他检查类型 -- 查询框回车查询结果        【OK】
+TODO     2.不显示已经预约且已经完成检查的项目。需要朴哥支持
+
+    3.限制大的签到时间--当天上午中午下午晚上这种        【ok】
+        限制签到时间在两个地方：要注意由于小票打印的签到时间会在时段开始前30分钟就可以签到，所以判断的时候要注意处理。只是起始时间提前30分钟，截止时间就按照时段的截止时间来。//注意是60进制。减去30是不够的，要减70
+            1.使用申请单查询出来的项目中如果有时间未到的项目，给出提示，并将单子disabled
+            //2.真正的签到方法中再次进行判断(因为扫描小票二维码就直接给签了)//实现起来比较困难且没有必要，那么目前四楼使用小票二维码签到则暂不进行时间限制。
+    4.四楼诊室区域的显示：前十个不动，体检三个一个新Tab（Tab名称 体检中心），心内心外一个Tab（Tab名称 心内外科），之后的不显示。 【ok】
+    5.精准预约只能一个单子一个单子来的问题，需要服务端配合回传项目占用号数        【ok】
+        给input一个自定义属性 data-eitemnumcount ，记录该项目所占号数//不需要了，因为都有下标，直接从全局变量中取就行了，不需要这个变量。//但是可以留着给提示信息使用。
+    6.做一个更新日志提示功能：localStorage定义一个版本号       【ok】
+    7.一些耗时操作添加动画    【算了，改成异步怕影响逻辑】
+TODO     8.优化查看号池功能的显示
+
+    9.四楼 已签到 显示预约号数         【ok】
+    10.诊室outline返回是有诊室是否关闭的节点的，要判断,加减号的地方也判断    【ok】 【首页诊室关闭的时候第一次进入会显示灰色背景，没搞懂。。。】
+    11.检查项目 全部默认选中：修改预约、补打小票、取消预约   【ok】
+    12.给弹出层的退出按钮绑定Esc快捷键        【ok】
+    13.预约的时候，一个申请单的项目不能单个选择，类似修改急诊的逻辑
+    14.诊室显示方框添加预设号      【ok】
+TODO     11.项目注意事项 eitemdesc
+
+
+    精准预约的时候，逻辑问题，如果第一个单子不选，就不会进 reqIdx === 0，那么就会有问题。      【ok】
+
+    小票的分隔符：◉
+
+    TODO 修改预约、补打条码、取消预约 都要合并申请单。。。
+
+
+
+20190401：
+    分割reception.js
+
+
+20190409:
+    1.补打的小票添加一个标志。      【ok】
+    2.小票去掉申请科室，添加一个 检查地点 在检查诊室上面。   【ok】
+    3.注意事项从检查项目中取，二楼注意去重。
+        二楼注意事项固定只保留第一条，其他的从检查项目中取，注意去重。注意排除空串。
+        四楼注意事项固定也只保留第一条，其他的从检查项目中取。
+        第一条：◉ 请按照小票规定时间在自助机处签到，过时需要重新预约；    【ok】
+
+20190411:
+    诊室的优化显示。
+总号数：						普通号：
+基础号：						普通号剩余：
+加减号：						预留号：
+剩余号：						预留号剩余：
+
+20190415：
+    去掉查询按钮
+    门诊退费按钮的逻辑：
+        1.由于退费的特殊性，原则上是扫码哪张申请单，就只退费哪张申请单的项目
+        2.必须扫码申请单，也就是必须有申请单
+        3.还是要给提示，所以扫码之后还是要查询该申请单的项目并给出状态提示 -- 还是由朴哥后台查询，还有作废等控制。
+        4.查询出来之后默认选中，点击 下一步 ，跳转到退费应用的页面，使用get传参数，退费页面回显数据，确认之后提交并返回处理结果（看看自己后台的页面能不能嵌入到layer弹出层iframe）
+        5.需要给出计费的接口选择吗？--暂时不给。
+        6.之所以需要这个退费接口，就是在自动程序执行了确认计费的方法后，需要特殊退费，调用这个接口。正常情况下，此退费接口的使用次数很低。
+            所以超过查询日期范围（20天）的情况暂不考虑。
+            --跳转到退费页面的时候添加一项验证，对某一个参数进行md5编码，这个参数需要在申请单上找不到，但是在reqinfo返回中可以，而且后台也可以通过接口查询到这个参数。 -- 就用门诊号
+            --项目名称还是要拼接
+
+
+20190423：
+    颜色搭配进度：
+//0%-20%
+<div class="layui-progress layui-progress-big" lay-showPercent="yes">
+  <div class="layui-progress-bar layui-bg-blue" lay-percent="50%"></div>
+</div>
+//20%-40%
+<div class="layui-progress layui-progress-big" lay-showPercent="yes">
+  <div class="layui-progress-bar layui-bg-green" lay-percent="50%"></div>
+</div>
+//40%-60%
+<div class="layui-progress layui-progress-big" lay-showPercent="yes">
+  <div class="layui-progress-bar layui-bg-orange" lay-percent="50%"></div>
+</div>
+//60%-80%
+<div class="layui-progress layui-progress-big" lay-showPercent="yes">
+  <div class="layui-progress-bar layui-bg-red" lay-percent="50%"></div>
+</div>
+//80%-100%
+<div class="layui-progress layui-progress-big" lay-showPercent="yes">
+  <div class="layui-progress-bar layui-bg-cyan" lay-percent="50%"></div>
+</div>
+//100%
+<div class="layui-progress layui-progress-big" lay-showPercent="yes">
+  <div class="layui-progress-bar layui-bg-black" lay-percent="50%"></div>
+</div>
+
+TODO 20190423
+    门诊退费 操作的优化。
+
+-------------------*************************---------------------
+    serverVersion: 1554175890392,
+    versionChangeLog: '' +
+        '2019-04-04' +
+        '<br/>' +
+        '<br/>' +
+        '<br/>' +
+        '1.申请单查询结果不再显示其他检查类型的检查。' +
+        '<br/>' +
+        '<br/>' +
+        '2.签到时间限制上午、中午、下午等大范围。' +
+        '<br/>' +
+        '<br/>' +
+        '3.扫码签到可以使用快捷键F8，继续签到可以使用快捷键F9了，所有弹出层可以是用快捷键Esc退出了。' +
+        '<br/>' +
+        '<br/>' +
+        '4.精准预约/精准修改可以一次性选择多个申请单了。' +
+        '<br/>' +
+        '<br/>' +
+        '5.诊室显示加入了诊室是否关闭的判断。',
+-------------------*************************---------------------
+36.打印机的设置
+    1.系统打印机的打印首选项设置：新建尺寸100×80，打印完裁切
+    2.chrome中设置页码为1，边距为最小值，不含页眉页脚
+
+    3.设置跳过打印确认界面：快捷方式上右键--属性--目标后添加 --kiosk-printing
+
+
+
+20190403：查看号池代码备份
+    $("#showNumPoolDetail").on('click', function () {
+
+
+        //从主界面和全局变量teamDic中拼凑数据
+        if (teamDic && teamDic.length > 0) {
+            var teamListContent = '';
+            //准备弹出层显示的内容
+            teamListContent += '' +
+                '<from class="layui-form" lay-filter="show_num_pool_detail_form" id="show_num_pool_detail_form">' +
+                '  <div class="layui-form-item layer-form-position-center">' +
+                '    <div class="layui-inline">' +
+                '              <label class="layui-form-label">日期：</label>' +
+                '              <div class="layui-input-inline">' +
+                '                <input type="text" class="layui-input" id="scheduleDateForNumPoolDetail" placeholder="yyyy-MM-dd">' +
+                '              </div>' +
+                '    </div>' +
+                '    <div class="layui-inline">' +
+                '              <label class="layui-form-label">时段：</label>' +
+                '              <div class="layui-input-inline" id="scheduleNameForNumPoolDetail">' +
+                '              </div>' +
+                '    </div>' +
+                '  </div>' +
+                '  <div class="layui-form-item layer-form-position num-pool-summary" id="numPoolDetailAreaForNumPoolDetail">' +
+                '  </div>' +
+                '</form>';
+            //弹出显示
+            layer.open({
+                type: 1
+                , title: '选择诊室以查看号池详情'
+                , area: ['100%', '100%']
+                , offset: 'auto' //具体配置参考：offset参数项
+                , content: teamListContent
+                , btn: ['退出']
+                , btnAlign: 'c' //按钮居中
+                , yes: function () {
+                    layer.closeAll();
+                }
+            });
+            //渲染日期组件//啊哈哈哈哈哈哈哈哈
+            var laydate = layui.laydate;
+            var now = new Date();
+            var defaultDateValue = now.getFullYear() + '-' + lay.digit(now.getMonth() + 1) + '-' + lay.digit(now.getDate());
+
+            laydate.render({
+                elem: '#scheduleDateForNumPoolDetail',
+                btns: ['now'],//默认三个都显示 clear、now、confirm
+                value: defaultDateValue,
+                min: defaultDateValue,
+                //选择完毕后的回调
+                done: function (value, date, endDate) {
+                    //显示诊室号池概览
+                    //-------showNumPoolOutline();
+                }
+            });
+
+            //初始化时段单选按钮
+            var scheduleContent = "";
+            for (var scheIndex = 0; scheIndex < scheDic.length; scheIndex++) {
+                //默认选中第一个
+                if (scheIndex === 0) {
+                    scheduleContent += '<input type="radio" class="layui-form" lay-filter="scheduleNameRadioForNumPoolDetail" name="scheduleNameForNumPoolDetail" value="' + scheDic[scheIndex].scheguid + '" title="' + scheDic[scheIndex].schename + '" checked/>';
+                } else {
+                    scheduleContent += '<input type="radio" class="layui-form" lay-filter="scheduleNameRadioForNumPoolDetail" name="scheduleNameForNumPoolDetail" value="' + scheDic[scheIndex].scheguid + '" title="' + scheDic[scheIndex].schename + '"/>';
+                }
+            }
+            $("#scheduleNameForNumPoolDetail").html(scheduleContent);
+
+            //渲染表单//哈哈哈哈哈哈哈哈哈哈
+            layui.form.render('radio', 'show_num_pool_detail_form');
+            //手动执行一次显示诊室号池概览
+            //----------showNumPoolOutline();
+            //给时段单选按钮绑定事件
+            /*layui.form.on('select(show_num_pool_detail_select)', function (data) {
+                //显示诊室号池概览
+                //----------showNumPoolOutline();
+            });*/
+        } else {
+            layer.msg('<i class="layui-icon layui-icon-close pop-icon-error layui-circle"></i>没有诊室开放！');
+        }
+
+    });

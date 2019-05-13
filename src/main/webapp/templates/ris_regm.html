@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>号池系统前台预约</title>
+    <!--layui的css-->
+    <link rel="stylesheet" href="/static/css/layui.css"/>
+    <!--前台页面的css-->
+    <link rel="stylesheet" href="/static/css/reception.css?v=1556586079795"/>
+    <!--jQuery js-->
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <!--jQuery.qrcode js-->
+    <script type="text/javascript" src="/static/js/jquery.qrcode.min.js"></script>
+    <!--jQuery.hotkeys js-->
+    <script type="text/javascript" src="/static/js/jquery.hotkeys.js"></script>
+    <!--layuide js-->
+    <script type="text/javascript" src="/static/js/layui.all.js"></script>
+    <!--前台页面 js-->
+    <script type="text/javascript" src="/static/js/reception.js?v=1556586079795"></script>
+    <!--前台页面参数常量定义 js-->
+    <script type="text/javascript" src="/static/js/param.js?v=1556586079795"></script>
+    <!--tools js-->
+    <script type="text/javascript" src="/static/js/utils.js?v=1556586079795"></script>
+</head>
+<body>
+<!--标题-->
+<div class="reception-title">
+    <fieldset class="layui-elem-field layui-field-title text-center closer-title">
+        <legend style="font-size: 40px;">自助预约系统</legend>
+        <!--院区、检查类型的选择-->
+        <legend class="float-right" style="font-size: 12px;margin-top:-25px;margin-right: 5px">
+            院区：<span id="showHosp" class="tipsWord"></span>
+            &nbsp;
+            检查类型：<span id="showEtype" class="tipsWord"></span>
+            <button id="changeHospEtype" type="button"
+                    class="layui-btn layui-btn-xs layui-btn-radius layui-btn-primary">修改
+            </button>
+        </legend>
+        <!--提示信息-->
+        <legend class="float-right" style="font-size: 12px;margin-right: 360px;margin-top: -24px">
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-radius layui-btn-primary"
+                    id="forceRefreshBtn">&nbsp;&nbsp;强制刷新系统
+            </button>
+        </legend>
+        <!--查看更新日志-->
+        <legend class="float-right" style="font-size: 12px;margin-right: 280px;margin-top: -24px">
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-radius layui-btn-primary"
+                    id="showChangeLogBtn">&nbsp;&nbsp;更新日志
+            </button>
+        </legend>
+    </fieldset>
+</div>
+<!--刷卡、检查项目选择、注意事项(打条码)-->
+<form class="layui-form float-left main" lay-filter="main_form">
+    <!--20190117:因为表单中只有一个text的input，为了防止回车提交表单，设置一个空的隐藏的input-->
+    <input type="text" class="none-display"/>
+    <!--信息录入-->
+    <div class="layui-container">
+        <div class="layui-row">
+            <fieldset class="layui-elem-field">
+                <legend><i class="layui-icon layui-icon-username larger-icon"></i>信息录入</legend>
+                <div class="layui-form-item">
+                    <label class="layui-form-label large-font">刷卡：</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" id="cardNumInput" autocomplete="off"
+                               placeholder="请刷卡或输入就诊卡号" value="">
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <!--项目和注意事项-->
+        <div class="layui-row">
+            <fieldset class="layui-elem-field eitem-tips-fieldset">
+                <legend>
+                    <i class="layui-icon layui-icon-form larger-icon"></i>检查项目、注意事项
+                </legend>
+                <!--显示病人基本信息summary-->
+                <div class="summary" id="patInfoSummary"></div>
+                <!--显示总计的检查项目summary-->
+                <div class="summary" id="regAbleEitemSummary">总计：</div>
+                <!--显示已经选中的检查项目summary-->
+                <div class="summary" id="checkedEitemSummary">已选择：</div>
+                <!--显示进入修改预约模式-->
+                <div class="modify-reg-mode-tag none-display" id="modifyRegModeTag">修改预约模式</div>
+                <!--下方项目和注意事项的区域-->
+                <div class="exam_item">
+                    <!--检查项目-->
+                    <div class="layui-col-lg12 layui-col-md12 layui-col-sm12 layui-col-xs12 exam-item-stock-height">
+                        <!--检查项目，多的显示滚动条-->
+                        <div class="layui-form-item">
+                            <div id="examItemContent" class="layui-form" lay-filter="examItemFatherDiv">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <!--预约信息-->
+    <div class="layui-container">
+        <!--日期时段-->
+        <fieldset class="layui-elem-field">
+            <legend><i class="layui-icon layui-icon-log larger-icon"></i>预约信息</legend>
+            <div>
+                <!--日期时段选择-->
+                <div>
+                    <!--顶栏那一行-->
+                    <div class="layui-row">
+                        <!--日期-->
+                        <div class="layui-col-lg3 layui-col-md3 layui-col-sm3 layui-col-xs3 schedule-date-laydate">
+                            <div class="layui-form-item">
+                                <div class="" id="scheduleDatePicker">
+                                </div>
+                                <!--使用隐藏域来存储选中的日期，保证原始逻辑不大改-->
+                                <input type="text" id="scheduleDateInput" class="none-display"/>
+                            </div>
+                        </div>
+                        <!--时段和诊室-->
+                        <div class="layui-col-lg9 layui-col-md9 layui-col-sm9 layui-col-xs9">
+                            <!--时段-->
+                            <div class="layui-form-item reg-tips-column">
+                                <label class="layui-form-label lefter-label">预约：</label>
+                                <!--将日期的显示移到这里来-->
+                                <!--显示已经选中的要预约的日期、时段、诊室-->
+                                <div class="layui-input-block layui-form summary float-left layui-form-label"
+                                     id="preReceptionSummary_date"></div>
+                                <div class="layui-input-block layui-form float-left" id="scheduleName"
+                                     lay-filter="scheduleName">
+                                </div>
+                                <div class="layui-form summary float-left" id="preReceptionSummary_team"></div>
+                                <!--显示关于诊室的颜色区分信息-->
+                                <div class="float-right team-color-tips">
+                                    <i class="layui-icon layui-icon-circle-dot" style="color: #ED7161"></i>不可预约&nbsp;&nbsp;
+                                    <i class="layui-icon layui-icon-circle-dot" style="color: #FFCC66"></i>可预约&nbsp;&nbsp;
+                                    <i class="layui-icon layui-icon-circle-dot" style="color: #88C057"></i>已经选择
+                                </div>
+                            </div>
+                            <!--诊室-->
+                            <div id="team_area" class="clear-both">
+                                <!--选择、显示区域-->
+                                <div>
+                                    <!--显示诊室的格子-->
+                                    <div class="layui-tab layui-tab-card">
+                                        <ul class="layui-tab-title" id="teamTitle">
+                                            <!--<li class="layui-this">1-10诊室</li>
+                                            <li>11-20诊室</li>
+                                            <li>21-3诊室</li>
+                                            <li>31-40诊室</li>
+                                            <li>41-50诊室</li>-->
+                                        </ul>
+                                        <div class="layui-tab-content layui-form" lay-filter="teamContentFilter"
+                                             id="teamContent">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<!--功能操作区域-->
+<div class="operate-area">
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="operate_reg_btn"><i class="layui-icon layui-icon-log"></i>预约(F7)
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="specify_operate_reg_btn"><i class="layui-icon layui-icon-date"></i>精准预约
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="operate_modify_reg_btn"><i class="layui-icon layui-icon-edit"></i>修改预约
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="operate_add_num_btn"><i
+                class="layui-icon layui-icon-add-circle"></i>加号减号
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="operate_print_barcode_btn"><i
+                class="layui-icon layui-icon-align-center"></i>补打条码
+        </button>
+    </div>
+    <!--
+    <div class="btn-far">
+        <button type="button" disabled class="layui-btn layui-disabled" id="operate_print_rpt_btn"><i
+                class="layui-icon layui-icon-list"></i>补打报告
+        </button>
+    </div>
+    -->
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="operate_giveup_num_btn"><i class="layui-icon layui-icon-close"></i>取消预约
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="edit_considerations_btn"><i class="layui-icon layui-icon-tips"></i>编辑条码
+        </button>
+    </div>
+    <div class="btn-far none-display">
+        <button type="button" class="layui-btn" id="clearCardNumInput"><i class="layui-icon layui-icon-refresh"></i>重新刷卡(F2)
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="setRegType"><i class="layui-icon layui-icon-notice"></i>修改急诊
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="signinByBarcode"><i class="layui-icon layui-icon-tabs"></i>扫码签到(F8)
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="showNumPoolDetail"><i class="layui-icon layui-icon-set"></i>查看号池
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="setClinicPatRefund"><i class="layui-icon layui-icon-password"></i>门诊退费
+        </button>
+    </div>
+    <div class="btn-far">
+        <button type="button" class="layui-btn" id="toBackendManagePage"><i class="layui-icon layui-icon-set"></i>配置管理
+        </button>
+    </div>
+</div>
+
+<!--打印区域。由于生成canvas-->
+<div style="clear: both;display: none" id="printAreaFatherDiv">
+</div>
+<!--测试-->
+</body>
+</html>
